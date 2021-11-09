@@ -67,14 +67,21 @@ class LaravelMixpanel extends Mixpanel
 
     public function track($event, $properties = [])
     {
-        $properties = array_filter($properties);
-        $data = $properties + $this->getData();
 
-        if ($callbackClass = config("services.mixpanel.data_callback_class")) {
-            $data = (new $callbackClass)->process($data);
-            $data = array_filter($data);
+        if(config('services.mixpanel.enabled'))
+        {
+
+            $properties = array_filter($properties);
+            $data = $properties + $this->getData();
+    
+            if ($callbackClass = config("services.mixpanel.data_callback_class")) {
+                $data = (new $callbackClass)->process($data);
+                $data = array_filter($data);
+            }
+            
+            parent::track($event, $data);
+
         }
         
-        parent::track($event, $data);
     }
 }
